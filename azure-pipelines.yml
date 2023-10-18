@@ -3,6 +3,8 @@ trigger:
 
 resources:
 - repo: self
+# Agent VM image name
+  vmImageName: 'ubuntu-latest'
 
 variables:
   # Azure Container Registry Service Connection (Replace with your Docker Hub Service Connection)
@@ -11,8 +13,6 @@ variables:
   dockerfilePath: '$(Build.SourcesDirectory)/Azure-DevOps-with-AKS/1-Azure-DevOps-BuildandPush-to-ACR/Git-Repository-files/Dockerfile'
   tag: '$(Build.BuildId)'
 
-# Agent VM image name
-vmImageName: 'ubuntu-latest'
 
 stages:
 - stage: Build
