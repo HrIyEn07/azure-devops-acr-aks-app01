@@ -8,13 +8,14 @@ trigger:
 resources:
 - repo: self
 
-variables:
-  # Container registry service connection established during pipeline creation
-  dockerRegistryServiceConnection: '4bbe57ad-0c31-4137-aafc-bc591e6013d8'
-  imageRepository: 'aksdevopsngnix'
-  containerRegistry: 'acraks100.azurecr.io'
-  dockerfilePath: '$(Build.SourcesDirectory)/Azure-DevOps-with-AKS/1-Azure-DevOps-BuildandPush-to-ACR/Git-Repository-files/Dockerfile'
-  tag: '$(Build.BuildId)'
+  variables:
+# Docker Hub credentials or token
+   dockerHubUsername: 'hriyen777'
+   dockerHubPassword: 'docker-hub-service-connection'
+   imageRepository: 'hriyen777/acr-nginxapp01'
+   dockerfilePath: '$(Build.SourcesDirectory)/Azure-DevOps-with-AKS/1-Azure-DevOps-BuildandPush-to-ACR/Git-Repository-files/Dockerfile'
+   tag: '$(Build.BuildId)'
+
 
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
