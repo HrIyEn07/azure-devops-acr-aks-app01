@@ -15,6 +15,7 @@ variables:
   containerRegistry: 'containerwregistry900.azurecr.io'
   dockerfilePath: '$(Build.SourcesDirectory)/Azure-DevOps-with-AKS/1-Azure-DevOps-BuildandPush-to-ACR/Git-Repository-files/Dockerfile'
   tag: '$(Build.BuildId)'
+  imagePullSecret: 'aksdevopsacr1755e8d5-auth'
   
   # Agent VM image name
   vmImageName: 'ubuntu-latest'
@@ -37,4 +38,37 @@ stages:
         containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
+    - upload: manifests
+      artifact: manifests
+- stage: Deploy
+  displayName: Deploy stage
+  dependsOn: Build
 
+  jobs:
+  - deployment: Deploy
+    displayName: Deploy
+    pool:
+      vmImage: $(vmImageName)
+    environment: 'stacksimplifyazuredevopsgithubacraksapp1internal-1561.default'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - task: KubernetesManifest@0
+            displayName: Create imagePullSecret
+            inputs:
+              action: createSecret
+              secretName: $(imagePullSecret)
+              dockerRegistryEndpoint: $(dockerRegistryServiceConnection)
+              
+          - task: KubernetesManifest@0
+            displayName: Deploy to Kubernetes cluster
+            inputs:
+              action: deploy
+              manifests: |
+                $(Pipeline.Workspace)/manifests/deployment.yml
+                $(Pipeline.Workspace)/manifests/service.yml
+              imagePullSecrets: |
+                $(imagePullSecret)
+              containers: |
+                $(containerRegistry)/$(imageRepository):$(tag)
