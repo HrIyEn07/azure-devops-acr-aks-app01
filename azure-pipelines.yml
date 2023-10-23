@@ -1,22 +1,28 @@
+# Docker
+# Build and push an image to Azure Container Registry
+# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
+
 trigger:
-- main
+- master
 
 resources:
 - repo: self
 
 variables:
-  # Azure Container Registry Service Connection (Replace with your Docker Hub Service Connection)
-  dockerHubServiceConnection: 'docker-hub-service-connection'
-  imageRepository: 'hriyen777/acr-nginxapp01'
-  dockerfilePath: '$(Build.SourcesDirectory)/Azure-DevOps-with-AKS/1-Azure-DevOps-BuildandPush-to-ACR/Git-Repository-files/Dockerfile'
+  # Container registry service connection established during pipeline creation
+  dockerRegistryServiceConnection: 'acr-service-connection'
+  imageRepository: 'app1/app1nginx'
+  containerRegistry: 'containerwregistry900.azurecr.io'
+  dockerfilePath: '$(Build.SourcesDirectory)/Dockerfile'
   tag: '$(Build.BuildId)'
-  - name: vmImageName
-    value: ubuntu-latest
+  
+  # Agent VM image name
+  vmImageName: 'ubuntu-latest'
 
 stages:
 - stage: Build
   displayName: Build and push stage
-  jobs:
+  jobs:  
   - job: Build
     displayName: Build
     pool:
@@ -28,6 +34,6 @@ stages:
         command: buildAndPush
         repository: $(imageRepository)
         dockerfile: $(dockerfilePath)
-        containerRegistry: $(dockerHubServiceConnection) # Use Docker Hub Service Connection
+        containerRegistry: $(dockerRegistryServiceConnection)
         tags: |
           $(tag)
